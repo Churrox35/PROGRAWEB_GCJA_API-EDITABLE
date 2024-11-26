@@ -13,12 +13,7 @@
         <mat-icon matListIcon>library_books</mat-icon>
         API DE POKEMON
       </a>
-      <a mat-list-item class="nav-link logout-button" (click)="logout()">
-        <mat-icon matListIcon>exit_to_app</mat-icon>
-        CERRAR SESIÓN
-      </a>
-    </mat-nav-list>
-  </mat-sidenav>
+    </mat-nav-list>  </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       <button
@@ -30,8 +25,19 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span>CONTENIDO</span>
+      <span class="spacer"></span>
+      <div class="user-menu">
+        <img [src]="userImage" alt="User Image" class="user-avatar" mat-icon-button [matMenuTriggerFor]="menu">
+      </div>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          Cerrar Sesión
+        </button>
+      </mat-menu>
     </mat-toolbar>
-    <!-- Aquí se renderiza el contenido dinámico -->
-    <router-outlet></router-outlet>
+    <router-outlet>
+      
+    </router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

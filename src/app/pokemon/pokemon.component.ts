@@ -12,6 +12,15 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [CommonModule,NgIf,RouterModule,FormsModule,MatIconModule],
   template: `
+  <div class="search-bar">
+  <input 
+    type="text" 
+    placeholder="Ingresa el nombre del Pokemon..." 
+    [(ngModel)]="searchTerm" 
+    (input)="filterPokemons()" 
+  />
+</div>
+
  <div class="table-container">
   <div class="card">
     <div class="card-header">
@@ -303,6 +312,19 @@ import { MatIconModule } from '@angular/material/icon';
         display: grid;
         gap: 12px;
       }
+      .search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-bar input {
+  padding: 10px;
+  width: 50%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
 
       .skeleton {
         height: 20px;
@@ -326,6 +348,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class PokemonComponent implements OnInit {
   pokemons: Pokemon[] = [];
   displayedPokemons: Pokemon[] = [];
+  searchTerm: string = ''; // Almacena el término de búsqueda
   loading = true;
   currentPage = 1;
   pageSize = 6;
@@ -360,6 +383,14 @@ export class PokemonComponent implements OnInit {
     this.displayedPokemons = this.pokemons.slice(start, end);
   }
 
+  filterPokemons() {
+    const filtered = this.pokemons.filter(pokemon =>
+      pokemon.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      pokemon.id.toString().includes(this.searchTerm)
+    );
+    this.displayedPokemons = filtered.slice(0, this.pageSize);
+  }
+
   nextPage() {
     if (this.endIndex < this.pokemons.length) {
       this.currentPage++;
@@ -386,23 +417,21 @@ export class PokemonComponent implements OnInit {
     return pokemon.id;
   }
 
-
-
-deletePokemon(index: number) {
-  Swal.fire({
-    title: '¿Estás seguro?',
-    text: 'Esto eliminará al Pokémon.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.displayedPokemons.splice(index, 1);
-      Swal.fire('Eliminado', 'El Pokémon ha sido eliminado.', 'success');
-    }
-  });
-}
+  deletePokemon(index: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esto eliminará al Pokémon.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.displayedPokemons.splice(index, 1);
+        Swal.fire('Eliminado', 'El Pokémon ha sido eliminado.', 'success');
+      }
+    });
+  }
 
   editPokemon(pokemon: Pokemon) {
     this.editingPokemon = { ...pokemon };
@@ -424,14 +453,14 @@ deletePokemon(index: number) {
           ...pokemon,
           details: {
             ...details,
-            types: details.types.map((typeInfo: any) => typeInfo.type.name) // Extraer los nombres
+            types: details.types.map((typeInfo: any) => typeInfo.type.name)
           }
         };
       },
       error: (error) => console.error('Error fetching pokemon details:', error)
     });
   }
-  
+
 
   closeViewModal() {
     this.viewingPokemon = null;
